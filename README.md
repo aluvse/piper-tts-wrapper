@@ -2,6 +2,11 @@
 
 A lightweight PowerShell utility to generate speech using the [Piper](https://github.com/rhasspy/piper) TTS engine. This script simplifies the process of creating `.wav` files with specific voices and adjustable playback speeds.
 
+## Use Cases
+* **Anki Flashcards**: Generate high-quality offline audio for your language decks.
+* **Language Learning**: Practice listening to German (Thorsten), Polish (Bass), or English (Ryan) at a slower pace using the `-speed` parameter.
+* **Automation**: Perfect for bulk processing vocabulary lists for self-study.
+
 ## Setup
 
 ### 1. Install Piper
