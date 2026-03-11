@@ -24,7 +24,7 @@ You need `.onnx` and `.json` files for each language. Download them from the [Pi
 
 Place these files in your configured `$voiceDir`.
 
-## 🚀 Usage
+## Usage
 
 Update the `$voiceDir` and `$outputDir` paths in `say.ps1` before running.
 
@@ -53,7 +53,7 @@ Open PowerShell and run the script with your desired parameters:
 
 ```
 
-## ⚙️ Parameters
+## Parameters
 
 * `-text`: The string you want to convert to audio (Mandatory).
 * `-lang`: Language code (`en`, `de`, `pl`). Defaults to `en`.
