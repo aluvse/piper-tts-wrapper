@@ -18,11 +18,13 @@ param(
 )
 
 # --- Configuration ---
-# Update these paths to match your local setup
-$voiceDir = "C:\Users\Leves\BINS\piper\piper-voices"
-$outputDir = "C:\Users\Leves\Desktop\piper-out"
+# By default, the script looks for voices in a folder named 'piper-voices' 
+# and saves audio to 'output' inside the same directory where the script is located.
+# You can change these to absolute paths if you prefer (e.g., "C:\MyVoices").
+$voiceDir = Join-Path $PSScriptRoot "piper-voices"
+$outputDir = Join-Path $PSScriptRoot "output"
 
-# Force UTF8 for international character support (Umlauts, Polish letters)
+# Force UTF8 for international character support
 [Console]::InputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
@@ -45,23 +47,21 @@ $model = Join-Path $voiceDir $modelFile
 # Check if the model file exists
 if (!(Test-Path $model)) {
     Write-Host "[Error] Voice model not found at: $model" -ForegroundColor Red
-    Write-Host "Please download the .onnx and .json files for '$lang'." -ForegroundColor Yellow
+    Write-Host "Tip: Create a 'piper-voices' folder next to this script and put your .onnx files there." -ForegroundColor Yellow
     return
 }
 
-# 2. File name generation (Timestamp based)
+# 2. File name generation
 $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
 $fileName = Join-Path $outputDir "${lang}_${timestamp}.wav"
 
 # 3. Execution
-# Piper must be in your System PATH
 Write-Host "Generating audio..." -ForegroundColor Gray
 $text | piper --model $model --output_file $fileName --length_scale $speed
 
-# 4. Final verification
+# 4. Result check
 if (Test-Path $fileName) { 
     Write-Host "`n[Success] Audio saved: $fileName" -ForegroundColor Cyan
-    Write-Host "Parameters: Language=$lang, Speed=$speed" -ForegroundColor Gray
 } else {
-    Write-Host "`n[Error] Piper failed to generate the audio file." -ForegroundColor Red
+    Write-Host "`n[Error] Piper failed. Check if 'piper' is in your Windows PATH." -ForegroundColor Red
 }
