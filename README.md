@@ -1,69 +1,68 @@
+
 # Piper TTS PowerShell Wrapper
 
-A lightweight PowerShell utility to generate speech using the [Piper](https://github.com/rhasspy/piper) TTS engine. This script simplifies the process of creating `.wav` files with specific voices and adjustable playback speeds.
+A production-ready PowerShell toolchain for Speech Synthesis (TTS). Orchestrates **Piper** for inference and **FFmpeg** for encoding, optimized for high-density audio asset generation.
 
-## Use Cases
-* **Anki Flashcards**: Generate high-quality offline audio for your language decks.
-* **Language Learning**: Practice listening to German (Thorsten), Polish (Bass), or English (Ryan) at a slower pace using the `-speed` parameter.
-* **Automation**: Perfect for bulk processing vocabulary lists for self-study.
+## Technical Features
+
+* **Dual-Stage Pipeline**: Implements a WAV-to-Opus workflow, reducing storage requirements by up to 15x while maintaining vocal clarity.
+* **Batch Processing**: Automated high-throughput synthesis from plaintext datasets.
+* **Manifest Generation**: Exports a `map.json` linking source text to generated artifacts for database or Anki integration.
+* **Encoding Stability**: Enforces UTF-8 console and input handling for multilingual support (German, Polish, etc.).
 
 ## Setup
 
-### 1. Install Piper
+### 1. Requirements
 
-* Download the Windows binary from the [Piper GitHub Releases](https://github.com/rhasspy/piper/releases).
-* Extract it to a local folder (e.g., `C:\Users\Leves\BINS\piper\`).
+* **Piper**: Download Windows binary from [Piper GitHub Releases](https://github.com/rhasspy/piper/releases).
+* **FFmpeg**: Required for Opus encoding. Download from [ffmpeg.org](https://ffmpeg.org/download.html).
+* **System PATH**: Ensure both `piper` and `ffmpeg` are added to your Environment Variables.
 
-### 2. Add Piper to System PATH
+### 2. Voice Models
 
-To call `piper` from any directory, you must add its location to your Environment Variables:
-
-1. Search for **"Edit the system environment variables"** in Windows.
-2. Click **Environment Variables** > **System variables** > **Path** > **Edit**.
-3. Click **New** and add the folder path where `piper.exe` is located.
-4. Restart your terminal.
-
-### 3. Download Voice Models
-
-You need `.onnx` and `.json` files for each language. Download them from the [Piper Voices Repository](https://huggingface.co/rhasspy/piper-voices/tree/main):
-
-Place these files in your configured `$voiceDir`.
+Download `.onnx` and `.json` files from the [Piper Voices Repository](https://huggingface.co/rhasspy/piper-voices/tree/main) and place them in your `$voiceDir`.
 
 ## Usage
 
-Update the `$voiceDir` and `$outputDir` paths in `say.ps1` before running.
-
-### Generate Speech
-
-Open PowerShell and run the script with your desired parameters:
-
-**English (Default):**
+### Individual Synthesis (`say.ps1`)
 
 ```powershell
-.\say.ps1 -text "Hello world"
+.\say.ps1 -text "Ich möchte ein Studienkolleg besuchen" -lang "de" -speed 1.3
 
 ```
 
-**German (Slow speed):**
+### Bulk Processing (`mass_say.ps1`)
+
+Expects a UTF-8 encoded `.txt` file with one phrase per line:
 
 ```powershell
-.\say.ps1 -text "Guten Tag" -lang "de" -speed 1.5
-
-```
-
-**Polish:**
-
-```powershell
-.\say.ps1 -text "Dzień dobry" -lang "pl"
+.\mass_say.ps1 -inputFile "vocab.txt" -lang "de" -speed 1.2
 
 ```
 
 ## Parameters
 
-* `-text`: The string you want to convert to audio (Mandatory).
-* `-lang`: Language code (`en`, `de`, `pl`). Defaults to `en`.
-* `-speed`: The `length_scale` factor. Higher is slower (e.g., 1.5), lower is faster (e.g., 0.8). Defaults to 1.2.
+* `-text` / `-inputFile`: The content to convert (Mandatory).
+* `-lang`: Language code (`en`, `de`, `dem` (emotional), `pl`). Defaults to `de`.
+* `-speed`: The `length_scale` factor. Higher is slower (e.g., 1.5). Defaults to 1.2.
 
----
+## Output
 
-Would you like me to help you create a `.gitignore` file to prevent your `.wav` files and large `.onnx` models from being uploaded to GitHub?
+Files are saved to your `$outputDir` in `.opus` format.
+Mass processing generates a `map.json`:
+
+```json
+[
+  {
+    "id": 1,
+    "text": "Guten Tag",
+    "audio": "[sound:de_audio_1.opus]"
+  }
+]
+
+```
+
+## Troubleshooting
+
+* **Encoding**: Ensure input files are UTF-8 encoded without BOM to prevent character corruption.
+* **FFmpeg**: If encoding fails, verify FFmpeg is accessible via terminal and you have write permissions for the destination directory.
